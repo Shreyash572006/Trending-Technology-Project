@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — VENDRIXA IQ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+<div class="bg-animations">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="grid-overlay"></div>
+</div>
+
+<div class="dashboard-container">
+
+    <!-- ═══════ SIDEBAR ═══════ -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-icon">✨</div>
+            <div>
+                <div style="font-weight:900;font-size:0.9rem;letter-spacing:-0.05em">VENDRIXA IQ</div>
+                <div style="font-size:0.65rem;color:var(--text-muted)">AI SELLER INTELLIGENCE</div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section-label">Analytics</div>
+            <div class="nav-item active"  data-target="overview">    <span>📊</span> Overview        </div>
+            <div class="nav-item"         data-target="upload">      <span>📤</span> Upload & Analyse</div>
+
+            <div class="nav-section-label" style="margin-top:1rem">AI Tools</div>
+            <div class="nav-item"         data-target="aichat">      <span>🤖</span> AI Analyst      </div>
+            <div class="nav-item"         data-target="advisor">     <span>🧠</span> Business Advisor</div>
+            <div class="nav-item"         data-target="pricing">     <span>💰</span> Pricing Optimizer</div>
+
+            <div class="nav-section-label" style="margin-top:1rem">Modules</div>
+            <div class="nav-item"         data-target="sales">       <span>💳</span> Sales Logger    </div>
+            <div class="nav-item"         data-target="inventory">   <span>📦</span> Inventory       </div>
+            <div class="nav-item"         data-target="expenses">    <span>🧾</span> Expenses        </div>
+            <div class="nav-item"         data-target="marketing">   <span>📢</span> Marketing       </div>
+            <div class="nav-item"         data-target="competitor">  <span>🏆</span> Competitor      </div>
+            <div class="nav-item"         data-target="reviews">     <span>⭐</span> Reviews         </div>
+            <div class="nav-item"         data-target="reports">     <span>📑</span> Smart Reports   </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <div class="user-avatar" id="userInitials">U</div>
+                <div class="user-details">
+                    <h4 id="userNameDisplay">–</h4>
+                    <p id="shopNameDisplay">–</p>
+                </div>
+            </div>
+            <button id="logoutBtn" class="btn btn-ghost w-full" style="font-size:0.75rem">🔓 Logout</button>
+        </div>
+    </aside>
+
+    <!-- ═══════ MAIN CONTENT ═══════ -->
+    <main class="main-content">
+        <div class="top-bar">
+            <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+            <div style="display:flex;gap:0.75rem;align-items:center">
+                <div class="badge" style="background:rgba(16,185,129,0.1);color:#10B981;border:1px solid rgba(16,185,129,0.3);">● System Live</div>
+            </div>
+        </div>
+
+        <div id="toast-container"></div>
+
+        <!-- ──────────────────────────────────────────
+             1. OVERVIEW
+        ────────────────────────────────────────── -->
+        <div id="overview" class="section active">
+            <h2 class="section-title">Dashboard Overview</h2>
+
+            <div class="kpi-grid">
+                <div class="glass kpi-card"><h3>Total Revenue</h3><div class="value" id="kpiRevenue">₹0.00</div></div>
+                <div class="glass kpi-card"><h3>Total Expenses</h3><div class="value" id="kpiExpenses">₹0.00</div></div>
+                <div class="glass kpi-card"><h3>Net Profit</h3><div class="value text-gradient" id="kpiProfit">₹0.00</div></div>
+                <div class="glass kpi-card"><h3>Profit Margin</h3><div class="value" id="kpiMargin">0.0%</div></div>
+            </div>
+
+            <div class="charts-grid">
+                <div class="glass chart-card">
+                    <h3 class="chart-title">Revenue by Day</h3>
+                    <div class="chart-container"><canvas id="revenueChart"></canvas></div>
+                </div>
+                <div class="glass chart-card">
+                    <h3 class="chart-title">Sales by Product</h3>
+                    <div class="chart-container"><canvas id="productChart"></canvas></div>
+                </div>
+            </div>
+
+            <div class="glass" style="padding:1.5rem">
+                <h3 class="chart-title">AI Daily Summary</h3>
+                <div id="overviewAISummary" style="color:var(--text-muted);font-size:0.875rem;line-height:1.7">
+                    Add sales data and expenses to see intelligent insights here.
+                </div>
+            </div>
+        </div>
+
+        <!-- ──────────────────────────────────────────
+             2. UPLOAD & ANALYSE
+        ────────────────────────────────────────── -->
+        <div id="upload" class="section">
+            <h2 class="section-title">📤 Upload & Analyse Business Data</h2>
+            <p style="color:var(--text-muted);margin-bottom:1.5rem">Upload your CSV or Excel file — VENDRIXA IQ will automatically extract columns, calculate KPIs, generate charts, and give you AI-powered business decisions.</p>
+
+            <!-- Upload Zone -->
+            <div id="dropZone" class="dropzone glass">
+                <div class="dropzone-icon">📂</div>
+                <p style="font-size:1.25rem;font-weight:700;margin-bottom:0.5rem">Drag & Drop your file here</p>
+                <p style="color:var(--text-muted);margin-bottom:1.5rem">Supports .CSV and .XLSX files</p>
+                <label for="fileInput" class="btn btn-primary" style="cursor:pointer">📁 Browse File</label>
+                <input type="file" id="fileInput" accept=".csv,.xlsx,.xls" style="display:none">
+                <p id="uploadFileName" class="hidden" style="margin-top:1rem;font-size:0.875rem;color:var(--accent)"></p>
+            </div>
+
+            <!-- Error message -->
+            <div id="uploadError" class="hidden" style="margin-top:1rem;padding:0.75rem 1rem;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:0.5rem;color:var(--danger);font-size:0.875rem"></div>
+
+            <!-- Loader -->
+            <div id="uploadLoader" class="hidden" style="text-align:center;padding:2rem">
+                <div class="loader"></div>
+                <p style="margin-top:1rem;color:var(--text-muted)">Processing your data…</p>
+            </div>
+
+            <!-- Column Mapper -->
+            <div id="columnMapper" class="hidden glass" style="padding:1.5rem;margin-top:1.5rem">
+                <h3 style="margin-bottom:1rem">⚙️ Map Your Columns</h3>
+                <p style="color:var(--text-muted);margin-bottom:1.5rem;font-size:0.875rem">We couldn't auto-detect all required columns. Please map them manually:</p>
+                <div id="mapperFields" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem"></div>
+                <button id="applyMapBtn" class="btn btn-primary" style="margin-top:1rem">Apply Mapping & Analyse</button>
+            </div>
+
+            <!-- RESULTS (hidden until file uploaded) -->
+            <div id="uploadResults" class="hidden" style="margin-top:2rem">
+
+                <!-- KPI Row -->
+                <div class="kpi-grid" style="margin-bottom:2rem">
+                    <div class="glass kpi-card"><h3>Total Revenue</h3><div class="value" id="upRevenue">₹0</div></div>
+                    <div class="glass kpi-card"><h3>Net Profit</h3>  <div class="value" id="upProfit">₹0</div></div>
+                    <div class="glass kpi-card"><h3>Avg Margin</h3>  <div class="value" id="upMargin">0%</div></div>
+                    <div class="glass kpi-card"><h3>Rows Analysed</h3><div class="value" id="upRows">0</div></div>
+                    <div class="glass kpi-card"><h3>Best Product</h3><div class="value" style="font-size:1rem" id="bestProduct">–</div></div>
+                    <div class="glass kpi-card"><h3>Low Margin Product</h3><div class="value" style="font-size:1rem" id="worstProduct">–</div></div>
+                </div>
+
+                <!-- 4 Charts -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2rem" id="uploadChartsGrid">
+                    <div class="glass chart-card">
+                        <h3 class="chart-title">📈 Sales Over Time</h3>
+                        <div class="chart-container"><canvas id="upLineChart"></canvas></div>
+                    </div>
+                    <div class="glass chart-card">
+                        <h3 class="chart-title">📊 Product vs Quantity Sold</h3>
+                        <div class="chart-container" style="height:280px"><canvas id="upBarChart"></canvas></div>
+                    </div>
+                    <div class="glass chart-card">
+                        <h3 class="chart-title">🥧 Revenue Contribution</h3>
+                        <div class="chart-container"><canvas id="upPieChart"></canvas></div>
+                    </div>
+                    <div class="glass chart-card">
+                        <h3 class="chart-title">📉 Profit Trend</h3>
+                        <div class="chart-container"><canvas id="upProfitChart"></canvas></div>
+                    </div>
+                </div>
+
+                <!-- AI Insights -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2rem">
+                    <div class="glass" style="padding:1.5rem">
+                        <h3 style="margin-bottom:1rem">🤖 AI Insights</h3>
+                        <div id="aiInsightsList"></div>
+                    </div>
+                    <div class="glass" style="padding:1.5rem">
+                        <h3 style="margin-bottom:1rem">🧠 AI Business Decisions</h3>
+                        <div id="decisionsList"></div>
+                    </div>
+                </div>
+
+                <!-- Data Table -->
+                <div class="glass" style="padding:1.5rem">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:1rem">
+                        <h3>📋 Data Table</h3>
+                        <div style="display:flex;gap:0.75rem;align-items:center">
+                            <input type="text" id="tableSearch" class="form-control" placeholder="🔍 Search product / date…" style="width:220px">
+                            <button class="btn btn-primary" onclick="UploadEngine.exportReport()">⬇ Download Report</button>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th onclick="UploadEngine.sortTable('date',true)" style="cursor:pointer">Date ↕</th>
+                                    <th>Product</th>
+                                    <th onclick="UploadEngine.sortTable('costPrice',false)" style="cursor:pointer">Cost ↕</th>
+                                    <th onclick="UploadEngine.sortTable('sellingPrice',false)" style="cursor:pointer">Sell Price ↕</th>
+                                    <th onclick="UploadEngine.sortTable('quantity',false)" style="cursor:pointer">Qty ↕</th>
+                                    <th onclick="UploadEngine.sortTable('totalSales',false)" style="cursor:pointer">Total Sales ↕</th>
+                                    <th onclick="UploadEngine.sortTable('profit',false)" style="cursor:pointer">Profit ↕</th>
+                                    <th onclick="UploadEngine.sortTable('margin',false)" style="cursor:pointer">Margin ↕</th>
+                                </tr>
+                            </thead>
+                            <tbody id="uploadTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Placeholder when no file -->
+            <div id="uploadPlaceholder" style="text-align:center;padding:3rem;color:var(--text-muted)">
+                <div style="font-size:4rem;margin-bottom:1rem">📊</div>
+                <p>Upload a file above to start your AI-powered analysis.</p>
+                <p style="font-size:0.875rem;margin-top:0.5rem">Need a sample? Your file should have columns: Product, Cost Price, Selling Price, Quantity, Date</p>
+            </div>
+        </div>
+
+        <!-- ──────────────────────────────────────────
+             3. AI ANALYST CHAT
+        ────────────────────────────────────────── -->
+        <div id="aichat" class="section">
+            <!-- Chat Header -->
+            <div class="ai-chat-header glass" style="display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;margin-bottom:1.5rem;border-radius:1rem">
+                <div style="display:flex;align-items:center;gap:1rem">
+                    <div class="ai-logo-wrap">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="aiGrad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+                                    <stop offset="0%" stop-color="#8B5CF6"/><stop offset="100%" stop-color="#3B82F6"/>
+                                </linearGradient>
+                                <linearGradient id="aiGrad2" x1="48" y1="0" x2="0" y2="48" gradientUnits="userSpaceOnUse">
+                                    <stop offset="0%" stop-color="#A855F7"/><stop offset="100%" stop-color="#06B6D4"/>
+                                </linearGradient>
+                            </defs>
+                            <circle cx="24" cy="24" r="22" fill="url(#aiGrad)" opacity="0.15"/>
+                            <circle cx="24" cy="24" r="22" stroke="url(#aiGrad)" stroke-width="1.5" fill="none"/>
+                            <circle cx="24" cy="16" r="3.5" fill="url(#aiGrad2)"/>
+                            <circle cx="14" cy="22" r="3" fill="url(#aiGrad2)" opacity="0.8"/>
+                            <circle cx="34" cy="22" r="3" fill="url(#aiGrad2)" opacity="0.8"/>
+                            <circle cx="18" cy="32" r="3" fill="url(#aiGrad2)" opacity="0.9"/>
+                            <circle cx="30" cy="32" r="3" fill="url(#aiGrad2)" opacity="0.9"/>
+                            <circle cx="24" cy="26" r="2.5" fill="white" opacity="0.9"/>
+                            <line x1="24" y1="19.5" x2="24" y2="23.5" stroke="url(#aiGrad)" stroke-width="1.2" opacity="0.6"/>
+                            <line x1="22.5" y1="14.5" x2="16" y2="19.5" stroke="url(#aiGrad)" stroke-width="1.2" opacity="0.5"/>
+                            <line x1="25.5" y1="14.5" x2="32" y2="19.5" stroke="url(#aiGrad)" stroke-width="1.2" opacity="0.5"/>
+                            <line x1="15.5" y1="24.8" x2="21.5" y2="26" stroke="url(#aiGrad)" stroke-width="1.2" opacity="0.5"/>
+                            <line x1="32.5" y1="24.8" x2="26.5" y2="26" stroke="url(#aiGrad)" stroke-width="1.2" opacity="0.5"/>
+                            <line x1="22" y1="27.5" x2="19" y2="29.5" stroke="url(#aiGrad)" stroke-width="1.2" opacity="0.5"/>
+                            <line x1="26" y1="27.5" x2="29" y2="29.5" stroke="url(#aiGrad)" stroke-width="1.2" opacity="0.5"/>
+                            <circle cx="38" cy="12" r="1.2" fill="#A855F7" opacity="0.8"/>
+                            <circle cx="10" cy="36" r="1" fill="#3B82F6" opacity="0.7"/>
+                            <circle cx="40" cy="36" r="1" fill="#8B5CF6" opacity="0.6"/>
+                        </svg>
+                        <div class="ai-pulse-ring"></div>
+                    </div>
+                    <div>
+                        <div style="font-weight:800;font-size:1.1rem;letter-spacing:-0.02em">VENDRIXA AI <span style="font-size:0.65rem;background:linear-gradient(90deg,#7C3AED,#3B82F6);padding:2px 6px;border-radius:4px;vertical-align:middle;margin-left:4px">v2</span></div>
+                        <div style="display:flex;align-items:center;gap:0.4rem;margin-top:2px">
+                            <div style="width:7px;height:7px;background:#10B981;border-radius:50%;animation:pulse 2s infinite"></div>
+                            <span style="font-size:0.72rem;color:var(--text-muted)">Online &middot; Seller Intelligence Engine</span>
+                        </div>
+                    </div>
+                </div>
+                <button id="clearChatBtn" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--text-muted);padding:0.5rem 1rem;border-radius:0.5rem;cursor:pointer;font-size:0.8rem">&#128465; Clear</button>
+            </div>
+
+            <!-- Chat Window -->
+            <div class="glass ai-chat-window" id="chatWindow">
+                <div class="chat-messages" id="chatMessages"></div>
+
+                <div class="chat-prompts" id="chatPrompts">
+                    <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:0.5rem">&#128161; Suggested questions:</div>
+                    <div style="display:flex;flex-wrap:wrap;gap:0.5rem">
+                        <button class="prompt-pill prompt">What is my profit margin?</button>
+                        <button class="prompt-pill prompt">How can I improve profits?</button>
+                        <button class="prompt-pill prompt">Which product has low stock?</button>
+                        <button class="prompt-pill prompt">What are my highest expenses?</button>
+                        <button class="prompt-pill prompt">How to increase revenue?</button>
+                        <button class="prompt-pill prompt">Best pricing strategy</button>
+                        <button class="prompt-pill prompt">How to get more customers?</button>
+                        <button class="prompt-pill prompt">Analyse my business</button>
+                    </div>
+                </div>
+
+                <div class="chat-input-row" style="position:relative">
+                    <div id="voiceControlPanel" style="display:none; justify-content:space-between; align-items:center; margin-bottom:0.75rem; padding: 0 0.5rem;">
+                        <div style="display:flex; gap:0.5rem; align-items:center">
+                            <span id="detectedLangLabel" class="badge" style="background:rgba(59,130,246,0.15);color:#3B82F6;border:1px solid rgba(59,130,246,0.3)">🗣 Auto</span>
+                            <button id="voiceMuteToggle" class="btn btn-ghost" style="padding:0.25rem 0.6rem;font-size:0.7rem">🔊 Mute</button>
+                            <button id="voiceStopBtn" class="btn btn-ghost" style="padding:0.25rem 0.6rem;font-size:0.7rem;display:none;color:var(--danger)">⏹ Stop</button>
+                        </div>
+                        <select id="manualLangToggle" class="form-control" style="width: auto; padding: 0.25rem 0.75rem; font-size: 0.75rem; height: auto;">
+                            <option value="auto">Auto-Detect</option>
+                            <option value="en-IN">English</option>
+                            <option value="hi-IN">Hindi</option>
+                            <option value="mr-IN">Marathi</option>
+                        </select>
+                    </div>
+
+                    <div class="chat-input-wrap">
+                        <button id="aiMicBtn" class="chat-mic-btn" title="Start Voice Input">
+                            🎤
+                        </button>
+                        <div id="voiceWave" class="voice-wave"><span></span><span></span><span></span><span></span></div>
+                        <input type="text" id="aiChatInput" class="chat-input-field" placeholder="Ask me anything about your business…" autocomplete="off" maxlength="500">
+                        <button id="aiChatSend" class="chat-send-btn">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </button>
+                    </div>
+                    <div style="text-align:center;font-size:0.68rem;color:var(--text-muted);margin-top:0.5rem">VENDRIXA AI &middot; Seller Intelligence &middot; Always improving</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ──────────────────────────────────────────
+             4. BUSINESS ADVISOR
+        ────────────────────────────────────────── -->
+        <div id="advisor" class="section">
+            <h2 class="section-title">🧠 AI Business Advisor</h2>
+            <p style="color:var(--text-muted);margin-bottom:2rem">Intelligent analysis of your business performance with actionable recommendations.</p>
+
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem" id="advisorCards"></div>
+
+            <div class="glass" style="padding:1.5rem;margin-top:1.5rem">
+                <h3 style="margin-bottom:1rem">📊 Module-Level Scorecard</h3>
+                <div id="scorecard" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem"></div>
+            </div>
+        </div>
+
+        <!-- ──────────────────────────────────────────
+             5. PRICING OPTIMIZER
+        ────────────────────────────────────────── -->
+        <div id="pricing" class="section">
+            <h2 class="section-title">💰 Pricing Optimizer</h2>
+            <p style="color:var(--text-muted);margin-bottom:2rem">Simulate how price changes impact your profit margin in real-time.</p>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+                <div class="glass" style="padding:1.5rem">
+                    <h3 style="margin-bottom:1.5rem">Price Simulator</h3>
+                    <div class="form-group">
+                        <label>Product Name</label>
+                        <input type="text" id="pricingProduct" class="form-control" placeholder="e.g. Milk">
+                    </div>
+                    <div class="form-group">
+                        <label>Your Cost Price (₹)</label>
+                        <input type="number" id="pricingCost" class="form-control" placeholder="50.00" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>Current Selling Price (₹)</label>
+                        <input type="range" id="pricingPriceRange" min="0" max="5000" step="10" value="100" style="width:100%;accent-color:var(--primary)">
+                        <div style="display:flex;justify-content:space-between"><span id="priceRangeVal" style="color:var(--primary-light);font-weight:700;font-size:1.25rem">₹100</span></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Quantity Sold per Month</label>
+                        <input type="number" id="pricingQty" class="form-control" value="100">
+                    </div>
+                    <button class="btn btn-primary w-full" id="calcPricing">Calculate Optimal Price</button>
+                </div>
+
+                <div class="glass" style="padding:1.5rem">
+                    <h3 style="margin-bottom:1.5rem">Simulation Results</h3>
+                    <div id="pricingResults">
+                        <p style="color:var(--text-muted)">Fill in the form and click Calculate to see suggestions.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass" style="padding:1.5rem;margin-top:1.5rem">
+                <h3 style="margin-bottom:1rem">💡 Pricing Intelligence from Uploaded Data</h3>
+                <div id="pricingTableContainer" style="color:var(--text-muted);font-size:0.875rem">
+                    Upload a file in "Upload & Analyse" to see product-level pricing suggestions here.
+                </div>
+            </div>
+        </div>
+
+        <!-- ──────────────────────────────────────────
+             6. SALES LOGGER
+        ────────────────────────────────────────── -->
+        <div id="sales" class="section">
+            <h2 class="section-title">💳 Daily Sales Logger</h2>
+            <div class="glass" style="padding:1.5rem;margin-bottom:2rem">
+                <form id="salesForm" class="dashboard-form">
+                    <div class="form-row">
+                        <div class="form-group"><label>Date</label><input type="date" id="saleDate" class="form-control" required></div>
+                        <div class="form-group"><label>Product</label>
+                            <select id="saleProduct" class="form-control" required><option value="">Select…</option></select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Selling Price (₹)</label><input type="number" id="salePrice" class="form-control" step="0.01" required></div>
+                        <div class="form-group"><label>Quantity</label><input type="number" id="saleQty" class="form-control" min="1" required></div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Log Sale</button>
+                </form>
+            </div>
+            <div class="glass" style="padding:1.5rem">
+                <h3 class="chart-title">Sales History</h3>
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>Date</th><th>Product</th><th>Qty</th><th>Unit Price</th><th>Total Sales</th><th>Profit</th><th>Action</th></tr></thead>
+                        <tbody id="salesTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ──────────────────────────────────────────
+             7. INVENTORY
+        ────────────────────────────────────────── -->
+        <div id="inventory" class="section">
+            <h2 class="section-title">📦 Inventory Management</h2>
+            <div class="glass" style="padding:1.5rem;margin-bottom:2rem">
+                <form id="inventoryForm" class="dashboard-form">
+                    <div class="form-row">
+                        <div class="form-group"><label>Product Name</label><input type="text" id="invName" class="form-control" required></div>
+                        <div class="form-group"><label>Stock Quantity</label><input type="number" id="invStock" class="form-control" min="0" required></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Cost Price (₹)</label><input type="number" id="invCost" class="form-control" step="0.01" required></div>
+                        <div class="form-group"><label>Selling Price (₹)</label><input type="number" id="invPrice" class="form-control" step="0.01" required></div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Product</button>
+                </form>
+            </div>
+            <div class="glass" style="padding:1.5rem">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+                    <h3>Current Stock</h3>
+                    <div id="lowStockAlert" class="hidden badge badge-danger" style="padding:0.5rem 1rem">⚠️ Low Stock Detected!</div>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>Product</th><th>Cost</th><th>Selling Price</th><th>Margin</th><th>Stock</th><th>Action</th></tr></thead>
+                        <tbody id="inventoryTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ──────────────────────────────────────────
+             8. EXPENSES
+        ────────────────────────────────────────── -->
+        <div id="expenses" class="section">
+            <h2 class="section-title">🧾 Expense Tracker</h2>
+            <div class="glass" style="padding:1.5rem;margin-bottom:2rem">
+                <form id="expenseForm" class="dashboard-form">
+                    <div class="form-row">
+                        <div class="form-group"><label>Date</label><input type="date" id="expDate" class="form-control" required></div>
+                        <div class="form-group"><label>Category</label>
+                            <select id="expCat" class="form-control">
+                                <option>Rent</option><option>Electricity</option><option>Salary</option>
+                                <option>Marketing</option><option>Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Description</label><input type="text" id="expDesc" class="form-control" required></div>
+                        <div class="form-group"><label>Amount (₹)</label><input type="number" id="expAmount" class="form-control" step="0.01" required></div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Expense</button>
+                </form>
+            </div>
+            <div class="glass" style="padding:1.5rem">
+                <h3>Expense History</h3>
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>Date</th><th>Category</th><th>Description</th><th>Amount</th><th>Action</th></tr></thead>
+                        <tbody id="expenseTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ──────────────────────────────────────────
+             9. MARKETING INSIGHTS
+        ────────────────────────────────────────── -->
+        <div id="marketing" class="section">
+            <h2 class="section-title">📢 Marketing & Sales Optimization</h2>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;margin-bottom:2rem">
+                <div class="glass" style="padding:1.5rem">
+                    <h3 style="margin-bottom:1rem">Log Campaign Data</h3>
+                    <div class="form-group"><label>Campaign Name</label><input type="text" id="campName" class="form-control" placeholder="Diwali Offer 2024"></div>
+                    <div class="form-group"><label>Ad Spend (₹)</label><input type="number" id="campSpend" class="form-control" placeholder="5000"></div>
+                    <div class="form-group"><label>Revenue Generated (₹)</label><input type="number" id="campRevenue" class="form-control" placeholder="25000"></div>
+                    <div class="form-group"><label>Conversions</label><input type="number" id="campConversions" class="form-control" placeholder="120"></div>
+                    <button class="btn btn-primary w-full" id="calcROI">Calculate ROI</button>
+                </div>
+                <div class="glass" style="padding:1.5rem" id="roiResult">
+                    <h3 style="margin-bottom:1rem">Campaign Analysis</h3>
+                    <p style="color:var(--text-muted)">Enter campaign data and click Calculate ROI.</p>
+                </div>
+            </div>
+            <div class="glass" style="padding:1.5rem">
+                <h3 style="margin-bottom:1rem">🕐 Optimal Selling Times</h3>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem" id="peakHoursGrid"></div>
+            </div>
+        </div>
+
+        <!-- ──────────────────────────────────────────
+             10. COMPETITOR ANALYSIS
+        ────────────────────────────────────────── -->
+        <div id="competitor" class="section">
+            <h2 class="section-title">🏆 Competitor Analysis</h2>
+            <p style="color:var(--text-muted);margin-bottom:2rem">Compare your pricing against simulated market averages and identify gaps.</p>
+            <div class="glass" style="padding:1.5rem;margin-bottom:1.5rem">
+                <h3 style="margin-bottom:1rem">Add Competitor Product</h3>
+                <div class="form-row">
+                    <div class="form-group"><label>Your Product</label><input type="text" id="compProduct" class="form-control" placeholder="Milk 1L"></div>
+                    <div class="form-group"><label>Your Price (₹)</label><input type="number" id="compYourPrice" class="form-control" placeholder="55"></div>
+                    <div class="form-group"><label>Competitor Price (₹)</label><input type="number" id="compPrice" class="form-control" placeholder="50"></div>
+                    <div class="form-group"><label>Competitor Name</label><input type="text" id="compName" class="form-control" placeholder="D-Mart"></div>
+                </div>
+                <button id="addCompBtn" class="btn btn-primary">Add Comparison</button>
+            </div>
+            <div class="glass" style="padding:1.5rem">
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>Product</th><th>Your Price</th><th>Competitor</th><th>Comp. Price</th><th>Difference</th><th>AI Verdict</th><th>Action</th></tr></thead>
+                        <tbody id="competitorTableBody"><tr><td colspan="7" class="text-center" style="color:var(--text-muted)">No comparisons added yet</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ──────────────────────────────────────────
+             11. CUSTOMER REVIEWS
+        ────────────────────────────────────────── -->
+        <div id="reviews" class="section">
+            <h2 class="section-title">⭐ Customer Review Analyser</h2>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+                <div class="glass" style="padding:1.5rem">
+                    <h3 style="margin-bottom:1rem">Add Review</h3>
+                    <div class="form-group"><label>Product Name</label><input type="text" id="revProduct" class="form-control"></div>
+                    <div class="form-group"><label>Customer Name (Optional)</label><input type="text" id="revCustomer" class="form-control" placeholder="Anonymous"></div>
+                    <div class="form-group"><label>Rating</label>
+                        <select id="revRating" class="form-control">
+                            <option value="5">⭐⭐⭐⭐⭐ — Excellent</option>
+                            <option value="4">⭐⭐⭐⭐ — Good</option>
+                            <option value="3">⭐⭐⭐ — Average</option>
+                            <option value="2">⭐⭐ — Poor</option>
+                            <option value="1">⭐ — Very Bad</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Review Text</label>
+                        <textarea id="revText" class="form-control" rows="4" placeholder="Customer review…" style="resize:vertical"></textarea>
+                    </div>
+                    <button id="addReviewBtn" class="btn btn-primary w-full">Analyse & Save Review</button>
+                </div>
+                <div>
+                    <div class="glass" style="padding:1.5rem;margin-bottom:1.5rem" id="sentimentSummary">
+                        <h3 style="margin-bottom:1rem">Sentiment Summary</h3>
+                        <p style="color:var(--text-muted)">Add reviews to see AI sentiment analysis here.</p>
+                    </div>
+                    <div class="glass" style="padding:1.5rem">
+                        <h3 style="margin-bottom:1rem">Recent Reviews</h3>
+                        <div id="reviewsList" style="max-height:300px;overflow-y:auto">
+                            <p style="color:var(--text-muted)">No reviews yet.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ──────────────────────────────────────────
+             12. SMART REPORTS
+        ────────────────────────────────────────── -->
+        <div id="reports" class="section">
+            <h2 class="section-title">📑 Smart Report Generator</h2>
+            <p style="color:var(--text-muted);margin-bottom:2rem">Generate a comprehensive business performance report from all your data.</p>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;margin-bottom:2rem">
+                <div class="glass" style="padding:1.5rem;text-align:center;cursor:pointer;transition:all 0.3s" onclick="Reports.generateFull()" id="fullReportBtn">
+                    <div style="font-size:3rem">📊</div>
+                    <h3 style="margin:0.75rem 0 0.25rem">Full Business Report</h3>
+                    <p style="color:var(--text-muted);font-size:0.875rem">Sales, expenses, profit, AI insights</p>
+                    <button class="btn btn-primary" style="margin-top:1rem;width:100%">Download CSV Report</button>
+                </div>
+                <div class="glass" style="padding:1.5rem;text-align:center;cursor:pointer;transition:all 0.3s" onclick="Reports.generateSalesOnly()">
+                    <div style="font-size:3rem">💳</div>
+                    <h3 style="margin:0.75rem 0 0.25rem">Sales-Only Report</h3>
+                    <p style="color:var(--text-muted);font-size:0.875rem">Product performance details</p>
+                    <button class="btn btn-ghost" style="margin-top:1rem;width:100%">Download CSV</button>
+                </div>
+                <div class="glass" style="padding:1.5rem;text-align:center;cursor:pointer;transition:all 0.3s" onclick="Reports.generateExpensesOnly()">
+                    <div style="font-size:3rem">🧾</div>
+                    <h3 style="margin:0.75rem 0 0.25rem">Expense Report</h3>
+                    <p style="color:var(--text-muted);font-size:0.875rem">Monthly expense breakdown</p>
+                    <button class="btn btn-ghost" style="margin-top:1rem;width:100%">Download CSV</button>
+                </div>
+            </div>
+            <div class="glass" style="padding:1.5rem" id="reportPreview">
+                <h3 style="margin-bottom:1rem">📋 Current Period Summary</h3>
+                <div id="reportSummaryContent" style="color:var(--text-muted)">Generate a report to see summary here.</div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<!-- Scripts -->
+<script src="js/auth.js"></script>
+<script src="js/db.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/ai-engine.js"></script>
+<script src="js/voice-assistant.js"></script>
+<script src="js/upload-engine.js"></script>
+<script src="js/modules.js"></script>
+<script src="js/dashboard.js"></script>
+</body>
+</html>
