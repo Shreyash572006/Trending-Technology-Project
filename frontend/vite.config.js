@@ -11,5 +11,5 @@ export default defineConfig({
     port: 3000,
     open: true,
   },
-  base: '/Solution-Challenge-2026/'
+  base: '/Trending-Technology-Project/'
 })
