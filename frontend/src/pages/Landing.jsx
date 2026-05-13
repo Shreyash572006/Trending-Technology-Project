@@ -364,12 +364,12 @@ function VoiceDemoSection() {
 
 // ── Features ──────────────────────────────────────────────────────────────
 const FEATURES = [
-  { icon: '🧠', title: 'AI Business Brain', desc: 'Detects critical issues in real-time and outputs prioritized action plans with profit impact estimates.', color: '#8B5CF6', glow: 'rgba(139,92,246,0.3)' },
-  { icon: '💰', title: 'Smart Pricing AI', desc: 'Compares competitor prices, demand signals and your margin to suggest the perfect price every time.', color: '#3B82F6', glow: 'rgba(59,130,246,0.3)' },
-  { icon: '📦', title: 'Inventory Prediction', desc: 'Forecasts 7/30/60-day demand with reorder alerts. Never overstock or run out of your bestsellers.', color: '#10B981', glow: 'rgba(16,185,129,0.3)' },
+  { icon: '🤖', title: 'AI Analyst Chat', desc: 'Ask anything about your business. Get detailed, ChatGPT-style answers with actionable insights instantly.', color: '#8B5CF6', glow: 'rgba(139,92,246,0.3)' },
+  { icon: '💰', title: 'Smart Pricing AI', desc: 'Input cost price, set target price, and instantly see how your margin changes. Find the perfect sweet spot.', color: '#3B82F6', glow: 'rgba(59,130,246,0.3)' },
+  { icon: '📦', title: 'Inventory Manager', desc: 'Track stock levels, get low-stock alerts, and see margin per product. Never run out of your bestseller again.', color: '#10B981', glow: 'rgba(16,185,129,0.3)' },
   { icon: '🎤', title: 'Voice Assistant', desc: 'Ask questions in English or Hindi. Get instant, voice-spoken actionable decisions — hands-free.', color: '#F59E0B', glow: 'rgba(245,158,11,0.3)' },
-  { icon: '📢', title: 'Marketing AI', desc: 'Generates entire 3-stage ad funnels, 5 ad copies per product and audience targeting strategy.', color: '#EF4444', glow: 'rgba(239,68,68,0.3)' },
-  { icon: '📊', title: 'Growth Strategist', desc: 'Revenue forecasting, phase-based roadmap and 90-day action plans to hit ₹5L+ monthly targets.', color: '#06B6D4', glow: 'rgba(6,182,212,0.3)' },
+  { icon: '📤', title: 'Upload & Analyse', desc: 'Drag & drop CSV/Excel files. AI auto-detects columns, calculates all metrics, and renders 4 charts instantly.', color: '#EF4444', glow: 'rgba(239,68,68,0.3)' },
+  { icon: '📊', title: 'Smart Reports', desc: 'One-click CSV export of all your data. Full reports with sales, expenses, and profit analysis at your fingertips.', color: '#06B6D4', glow: 'rgba(6,182,212,0.3)' },
 ]
 
 function FeaturesSection() {
@@ -379,7 +379,7 @@ function FeaturesSection() {
         <RevealOnScroll className="text-center mb-16">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-300 text-sm mb-6">⚡ Core Features</div>
           <h2 className="text-4xl lg:text-5xl font-black mb-4">Every Tool You Need to Win</h2>
-          <p className="text-white/50 max-w-2xl mx-auto">16 AI modules built specifically for Indian eCommerce sellers. No generic advice — only data-driven decisions.</p>
+          <p className="text-white/50 max-w-2xl mx-auto">Core AI modules built specifically for Indian eCommerce sellers. No generic advice — only data-driven decisions.</p>
         </RevealOnScroll>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -699,8 +699,8 @@ function TestimonialsSection() {
 
 // ── Pricing ────────────────────────────────────────────────────────────────
 const PLANS = [
-  { name: 'Starter', price: '₹0', duration: 'Forever free', features: ['3 AI modules', 'Voice AI (5 queries/day)', '100 products', 'Basic analytics'], cta: 'Start Free', highlight: false },
-  { name: 'Pro', price: '₹999', duration: '/month', features: ['All 16 AI modules', 'Unlimited Voice AI', 'Unlimited products', 'GST + Finance AI', 'Priority support', 'Multi-shop management'], cta: 'Start 14-day Trial', highlight: true },
+  { name: 'Starter', price: '₹0', duration: 'Forever free', features: ['Core AI modules', 'Voice AI (5 queries/day)', '100 products', 'Basic analytics'], cta: 'Start Free', highlight: false },
+  { name: 'Pro', price: '₹999', duration: '/month', features: ['All AI modules', 'Unlimited Voice AI', 'Unlimited products', 'Smart Pricing AI', 'Priority support', 'Multi-shop management'], cta: 'Start 14-day Trial', highlight: true },
   { name: 'Enterprise', price: '₹2,499', duration: '/month', features: ['Everything in Pro', 'Custom AI training', 'Dedicated AI manager', 'API access', 'White-label option', 'Custom integrations'], cta: 'Contact Sales', highlight: false },
 ]
 

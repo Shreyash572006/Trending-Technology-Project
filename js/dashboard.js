@@ -33,30 +33,20 @@ const Dashboard = {
         this.refreshAllData();
 
         // Init all modules
-        BusinessAdvisor.init();
         DecisionEngine.init();
-        AlertSystem.init();
         HealthScore.init();
-        InventoryPredictor.init();
         SmartPricing.init();
         SmartReports.init();
         Marketing.init();
         PricingModule.init();
-        Competitor.init();
-        ReviewsModule.init();
         // New modules
         Udhaar.init();
         BillingSystem.init();
         CashFlow.init();
         GoalSystem.init();
-        CustomerInsights.init();
-        DemandForecast.init();
         MiniEcommerce.init();
-        OfferGenerator.init();
-        StaffManager.init();
         SupplierManager.init();
         PeakSales.init();
-        MarketTrends.init();
         MultiShop.init();
         VoiceEntry.init();
         OfflineMode.init();
@@ -90,18 +80,8 @@ const Dashboard = {
                     this.refreshAllData();
                 } else if (target === 'health') {
                     HealthScore.refresh();
-                } else if (target === 'advisor') {
-                    BusinessAdvisor.refresh();
                 } else if (target === 'decision') {
                     DecisionEngine.renderHistory();
-                } else if (target === 'alerts') {
-                    AlertSystem.renderAlertsPage();
-                    const all = AlertSystem.getAlerts();
-                    const rEl = document.getElementById('alertCountRed'); if(rEl) rEl.textContent = all.filter(a=>a.type==='red').length;
-                    const yEl = document.getElementById('alertCountYellow'); if(yEl) yEl.textContent = all.filter(a=>a.type==='yellow').length;
-                    const gEl = document.getElementById('alertCountGreen'); if(gEl) gEl.textContent = all.filter(a=>a.type==='green').length;
-                } else if (target === 'invpredict') {
-                    InventoryPredictor.refresh();
                 } else if (target === 'aipricing') {
                     SmartPricing.renderHistory();
                 } else if (target === 'smartreports') {
@@ -114,22 +94,12 @@ const Dashboard = {
                     CashFlow.render();
                 } else if (target === 'goals') {
                     GoalSystem.render();
-                } else if (target === 'customerinsights') {
-                    CustomerInsights.refresh();
-                } else if (target === 'demand') {
-                    DemandForecast.refresh();
                 } else if (target === 'ecommerce') {
                     MiniEcommerce.render();
-                } else if (target === 'offers') {
-                    OfferGenerator.render();
-                } else if (target === 'staff') {
-                    StaffManager.render();
                 } else if (target === 'suppliers') {
                     SupplierManager.render();
                 } else if (target === 'peaksales') {
                     PeakSales.render();
-                } else if (target === 'markettrends') {
-                    MarketTrends.render();
                 } else if (target === 'multishop') {
                     MultiShop.render();
                 } else if (target === 'pricing') {
@@ -139,8 +109,6 @@ const Dashboard = {
                     this.refreshSalesTable();
                 } else if (target === 'inventory') {
                     this.refreshInventoryUI();
-                } else if (target === 'expenses') {
-                    this.refreshExpenseTable();
                 } else if (target === 'reports') {
                     Reports.renderPreview(DB.getKPIs(), DB.getSales(), DB.getExpenses());
                 }
@@ -219,20 +187,6 @@ const Dashboard = {
             } catch (err) {
                 showToast(err.message, 'error');
             }
-        });
-
-        // Expense Form
-        document.getElementById('expenseForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            DB.addExpense(
-                document.getElementById('expDate').value,
-                document.getElementById('expCat').value,
-                document.getElementById('expDesc').value,
-                document.getElementById('expAmount').value
-            );
-            e.target.reset();
-            showToast('Expense recorded 🧾', 'success');
-            this.refreshAllData();
         });
     },
 

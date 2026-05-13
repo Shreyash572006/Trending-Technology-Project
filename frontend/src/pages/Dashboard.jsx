@@ -10,26 +10,19 @@ import { useData } from '../context/DataContext'
 
 // Module imports
 import AnalyticsHub from '../modules/AnalyticsHub'
-import FinanceProfit from '../modules/FinanceProfit'
-import InventoryAI from '../modules/InventoryAI'
 import SalesTrends from '../modules/SalesTrends'
-import CustomerInsights from '../modules/CustomerInsights'
 import MarketingFinance from '../modules/MarketingFinance'
 import ReturnsAnalysis from '../modules/ReturnsAnalysis'
-import AIAdvisor from '../modules/AIAdvisor'
 import DataUpload from '../modules/DataUpload'
 import FloatingChatbot from '../components/FloatingChatbot'
 const NAV = [
   { id: 'upload',    label: 'Data Upload',        icon: <Upload size={18} />,    module: <DataUpload /> },
   { id: 'analytics', label: 'Analytics Hub',       icon: <Activity size={18} />,  module: <AnalyticsHub /> },
-  { id: 'finance',   label: 'Finance & Profit',    icon: <DollarSign size={18} />,module: <FinanceProfit /> },
-  { id: 'inventory', label: 'Inventory AI',         icon: <Package size={18} />,   module: <InventoryAI /> },
   { id: 'sales',     label: 'Sales Trends',         icon: <BarChart2 size={18} />, module: <SalesTrends /> },
-  { id: 'customers', label: 'Customer Insights',    icon: <Users size={18} />,     module: <CustomerInsights /> },
   { id: 'marketing', label: 'Marketing & Finance',  icon: <TrendingUp size={18} />,module: <MarketingFinance /> },
   { id: 'returns',   label: 'Returns Analysis',     icon: <RotateCcw size={18} />, module: <ReturnsAnalysis /> },
-  { id: 'advisor',   label: 'AI Business Advisor',  icon: <Lightbulb size={18} />, module: <AIAdvisor /> },
 ]
+
 
 function Loader() {
   const [step, setStep] = useState(0)
@@ -203,7 +196,7 @@ export default function Dashboard() {
                         const col = alert.priority === 'critical' ? '#ef4444' : alert.priority === 'warning' ? '#f59e0b' : '#3b82f6'
                         return (
                           <div key={alert.id} className="p-4 border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer"
-                            onClick={() => { setActiveModule('advisor'); setNotifsOpen(false) }}>
+                            onClick={() => { setActiveModule('analytics'); setNotifsOpen(false) }}>
                             <div className="flex items-start gap-3">
                               <span className="text-lg">{alert.icon}</span>
                               <div className="flex-1">
